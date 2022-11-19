@@ -1,0 +1,66 @@
+import java.sql.*;
+import java.util.*;
+public class Main{
+    public static void main(String[] args) throws SQLException {
+        Scanner sc=new Scanner(System.in);
+        boolean t=true;
+        while(t) {
+            System.out.println("\n\n1-->Show all the data \n2-->Insert the data");
+            int choice=sc.nextInt();
+            switch(choice){
+                case 1:
+                    showtable();
+                    break;
+                case 2:
+                    System.out.println("Enter your id : ");
+                    int id=sc.nextInt();
+                    System.out.println("Enter your age");
+                    int age=sc.nextInt();
+                    System.out.println("enter your contact : ");
+                    int contact=sc.nextInt();
+                    System.out.println("Enter your name : ");
+                    sc.nextLine();
+                    String name=sc.nextLine();
+                    System.out.println("enter gender ");
+                    String gender=sc.next();
+                    System.out.println("Enter your city : ");
+                    sc.nextLine();
+                    String city =sc.nextLine();
+                    addintothetable(id,age,contact,name,gender,city);
+                    break;
+            }
+        }
+    }
+
+    private static void addintothetable(int id, int age, int contact, String name, String gender, String city) throws SQLException {
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
+        Statement st=con.createStatement();
+        int rows =st.executeUpdate("insert into student values("+id+","+age+","+contact+",'"+name+"'"+",'"+gender+"','"+city+"');");
+        System.out.println(rows+ " number of rows commited ");
+    }
+
+    public static void showtable(){
+        try{
+            Connection connection= DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
+            Statement statement=connection.createStatement();
+            ResultSet resultSet=statement.executeQuery("SELECT * FROM student;");
+            while(resultSet.next()) {
+
+                System.out.print(resultSet.getInt("id"));
+                System.out.print("  ");
+                System.out.print(resultSet.getInt("AGE"));
+                System.out.print("  ");
+                System.out.print(resultSet.getInt("contact"));
+                System.out.print("  ");
+                System.out.print(resultSet.getString("name"));
+                System.out.print("  ");
+                System.out.print(resultSet.getString("gender"));
+                System.out.print("  ");
+                System.out.println(resultSet.getString("city"));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+}

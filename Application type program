@@ -63,4 +63,16 @@ public class Main{
         }
 
     }
+        private static void addintothetable(int id, int age, int contact, String name, String gender, String city) throws SQLException {
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
+        PreparedStatement ps=con.prepareStatement("insert into student values(?,?,?,?,?,?);");
+        ps.setInt(1,id);
+        ps.setInt(2,age);
+        ps.setInt(3,contact);
+        ps.setString(4,name);
+        ps.setString(5,gender);
+        ps.setString(6,city);
+        int rows=ps.executeUpdate();
+        System.out.println(rows+ " number of rows commited ");
+    }
 }

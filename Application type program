@@ -5,7 +5,8 @@ public class Main{
         Scanner sc=new Scanner(System.in);
         boolean t=true;
         while(t) {
-            System.out.println("\n\n1-->Show all the data \n2-->Insert the data");
+            System.out.println("\n1-->Show all the data \n2-->Insert the data \n3-->Delete data in the id\n4-->UPDATING the table");
+            System.out.println("5-->show all value in the id\n6-->get name for the ID");
             int choice=sc.nextInt();
             switch(choice){
                 case 1:
@@ -28,15 +29,115 @@ public class Main{
                     String city =sc.nextLine();
                     addintothetable(id,age,contact,name,gender,city);
                     break;
+                case 3:
+                    System.out.println("Enter the id which you want to delete : ");
+                    int did=sc.nextInt();
+                    deleteusingid(did);
+                    break;
+                case 4:
+                    System.out.println("Enter the column name : ");
+                    String s=sc.next();
+                    System.out.println("Enter the id which you want to ubdate : ");
+                    int uid=sc.nextInt();
+                    System.out.println("press 1-->if the value is int\npress 2-->if the value is string");
+                    int ch=sc.nextInt();
+                    System.out.println("enter the value : ");
+                    String value=sc.next();
+                    if(ch==1){
+                        int val=Integer.parseInt(value);
+                        update(s,uid,val);
+                    }else{
+                        update(s,uid,value);
+                    }
+                    break;
+                case 5:
+                    //callable statement
+                    System.out.println("Enter the id : ");
+                    int did1=sc.nextInt();
+                    dateintheID(did1);
+                case 6:
+                    System.out.println("Enter id for fetching name : ");
+                    int fid=sc.nextInt();
+                    getidfetchingname(fid);
             }
         }
     }
 
-    private static void addintothetable(int id, int age, int contact, String name, String gender, String city) throws SQLException {
+    private static void getidfetchingname(int fid) throws SQLException {
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
+//        CallableStatement cs=con.prepareCall("{call getName(?)}");
+        CallableStatement cs=con.prepareCall("{call getNam(?,?)}");
+        cs.setInt(1,fid);
+        cs.registerOutParameter(2,Types.VARCHAR);
+        cs.executeUpdate();
+        System.out.println(cs.getString(2));
+//        ResultSet rs= cs.executeQuery();
+//        while(rs.next()){
+//            System.out.print("name is    : ");
+//            System.out.println(rs.getString("name"));
+//        }
+    }
+
+    private static void dateintheID(int did) throws SQLException {
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
+        CallableStatement cs= con.prepareCall("{call Getcus(?)}");
+        cs.setInt(1,did);
+        ResultSet rs=cs.executeQuery();
+        while (rs.next()) {
+            System.out.print("id is      : ");
+            System.out.println(rs.getInt("id"));
+            System.out.print("name is    : ");
+            System.out.println(rs.getString("name"));
+            System.out.print("Age is     : ");
+            System.out.println(rs.getInt("AGE"));
+            System.out.print("Contact is : ");
+            System.out.println(rs.getInt("contact"));
+            System.out.print("Gender is  : ");
+            System.out.println(rs.getString("gender"));
+            System.out.print("City is    : ");
+            System.out.println(rs.getString("city"));
+
+        }
+
+
+    }
+
+    private static void update(String s, int uid, String val) throws SQLException {
         Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
         Statement st=con.createStatement();
-        int rows =st.executeUpdate("insert into student values("+id+","+age+","+contact+",'"+name+"'"+",'"+gender+"','"+city+"');");
+        int roe=st.executeUpdate("update student set "+s+" = '"+val+"' where  id = "+uid);
+        System.out.println(roe+" number of row updated");
+
+    }
+    private static void update(String s, int uid, int val) throws SQLException {
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
+        Statement st=con.createStatement();
+        int roe=st.executeUpdate("update student set "+s+" = "+val+" where  id = "+uid);
+        System.out.println(roe+" number of row updated");
+
+    }
+
+    private static void deleteusingid(int did) throws SQLException {
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
+        Statement st=con.createStatement();
+        int roe=st.executeUpdate("delete from student where id="+did);
+        System.out.println(roe+" number of row deleted with id = "+did);
+
+    }
+
+    private static void addintothetable(int id, int age, int contact, String name, String gender, String city) throws SQLException {
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
+        PreparedStatement ps=con.prepareStatement("insert into student values(?,?,?,?,?,?);");
+        //prepared statement
+        ps.setInt(1,id);
+        ps.setInt(2,age);
+        ps.setInt(3,contact);
+        ps.setString(4,name);
+        ps.setString(5,gender);
+        ps.setString(6,city);
+        int rows=ps.executeUpdate();
         System.out.println(rows+ " number of rows commited ");
+
     }
 
     public static void showtable(){
@@ -57,22 +158,14 @@ public class Main{
                 System.out.print(resultSet.getString("gender"));
                 System.out.print("  ");
                 System.out.println(resultSet.getString("city"));
+
             }
         }catch(Exception e){
             e.printStackTrace();
+        }finally {
+
         }
 
-    }
-        private static void addintothetable(int id, int age, int contact, String name, String gender, String city) throws SQLException {
-        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/ezhil","root","ezhil6999");
-        PreparedStatement ps=con.prepareStatement("insert into student values(?,?,?,?,?,?);");
-        ps.setInt(1,id);
-        ps.setInt(2,age);
-        ps.setInt(3,contact);
-        ps.setString(4,name);
-        ps.setString(5,gender);
-        ps.setString(6,city);
-        int rows=ps.executeUpdate();
-        System.out.println(rows+ " number of rows commited ");
+
     }
 }

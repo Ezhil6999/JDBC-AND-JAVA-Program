@@ -1,0 +1,80 @@
+import java.util.*;
+import java.lang.*;
+import java.sql.*;
+class Main1{
+    public static void main(String[] args) throws SQLException {
+        Scanner sc=new Scanner(System.in);
+        boolean t=true;
+        while(t){
+            System.out.println("1--> see all the data\n2--> Add Column of the Table\n3--> Remove column of the table\n" +
+                    "4--> find column name ='data' = - operation \n");
+            int choice=sc.nextInt();
+            switch (choice){
+                case 1:
+                    seealldata();
+                    break;
+                case 2:
+                    System.out.println("Enter column name : ");
+                    String name=sc.next();
+                    addcolumn(name);
+                    break;
+                case 3:
+                    System.out.println("Enter column name which you want to remove : ");
+                    String rname=sc.next();
+                    removecolumn(rname);
+                    break;
+                case 4:
+                    System.out.println("Enter Column name : ");
+                    String cname=sc.next();
+                    System.out.println("Enter Column data : ");
+                    String columndata=sc.next();
+                    shorting1(cname,columndata);
+                default:
+                    break;
+            }
+        }
+
+
+    }
+
+    private static void shorting1(String cname, String columndata) throws SQLException {
+        Connection c=DriverManager.getConnection("jdbc:mysql://localhost:3306/rajesh","root","ezhil6999");
+        Statement st=c.createStatement();
+        ResultSet r=st.executeQuery("select * from employee where "+cname+" ='"+columndata+"';");
+        while (r.next()){
+            System.out.print(r.getInt("emp_id")+"     ");
+            System.out.print(r.getString("ename")+"     ");
+            System.out.print(r.getString("job_desc")+"     ");
+            System.out.println(r.getInt("salary")+"     ");
+
+        }
+    }
+
+    private static void removecolumn(String rname) throws SQLException {
+        Connection c=DriverManager.getConnection("jdbc:mysql://localhost:3306/rajesh","root","ezhil6999");
+        Statement st=c.createStatement();
+        int r=st.executeUpdate("alter table employee drop column "+rname);
+        System.out.println("Number of row affected : "+r);
+
+    }
+
+    private static void addcolumn(String name) throws SQLException {
+        Connection c=DriverManager.getConnection("jdbc:mysql://localhost:3306/rajesh","root","ezhil6999");
+        Statement st=c.createStatement();
+        int r=st.executeUpdate("alter table employee add column "+name+" varchar(10);");
+        System.out.println("Number of row affected : "+r);
+    }
+
+    private static void seealldata() throws SQLException {
+        Connection c=DriverManager.getConnection("jdbc:mysql://localhost:3306/rajesh","root","ezhil6999");
+        Statement st=c.createStatement();
+        ResultSet r=st.executeQuery("select * from employee;");
+        while(r.next()){
+            System.out.print(r.getInt("emp_id")+"     ");
+            System.out.print(r.getString("ename")+"     ");
+            System.out.print(r.getString("job_desc")+"     ");
+            System.out.println(r.getInt("salary")+"     ");
+        }
+
+    }
+}
